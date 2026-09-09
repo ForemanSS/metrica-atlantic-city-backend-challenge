@@ -1,0 +1,6 @@
+@AtlanticCity.Gateway_HostAddress = http://localhost:5017
+
+GET {{AtlanticCity.Gateway_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

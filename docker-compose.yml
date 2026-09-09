@@ -1,0 +1,123 @@
+services:
+
+  postgres:
+    image: postgres:17-alpine
+    container_name: atlanticcity-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks:
+      - atlanticcity-network
+
+
+  rabbitmq:
+    image: rabbitmq:4-management
+    container_name: atlanticcity-rabbitmq
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "rabbitmq-diagnostics",
+          "-q",
+          "ping"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    networks:
+      - atlanticcity-network
+
+
+  seaweed-master:
+    image: chrislusf/seaweedfs:latest
+    container_name: atlanticcity-seaweed-master
+    restart: unless-stopped
+    command: "master -ip=seaweed-master -mdir=/data"
+    ports:
+      - "9333:9333"
+    volumes:
+      - seaweed-master-data:/data
+    networks:
+      - atlanticcity-network
+
+
+  seaweed-volume:
+    image: chrislusf/seaweedfs:latest
+    container_name: atlanticcity-seaweed-volume
+    restart: unless-stopped
+    command: "volume -mserver=seaweed-master:9333 -port=8080 -dir=/data"
+    depends_on:
+      - seaweed-master
+    ports:
+      - "8080:8080"
+    volumes:
+      - seaweed-volume-data:/data
+    networks:
+      - atlanticcity-network
+
+
+  seaweed-filer:
+    image: chrislusf/seaweedfs:latest
+    container_name: atlanticcity-seaweed-filer
+    restart: unless-stopped
+    command: "filer -master=seaweed-master:9333 -ip=seaweed-filer"
+    depends_on:
+      - seaweed-master
+      - seaweed-volume
+    ports:
+      - "8888:8888"
+    volumes:
+      - seaweed-filer-data:/data
+    networks:
+      - atlanticcity-network
+
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: atlanticcity-mailpit
+    restart: unless-stopped
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - atlanticcity-network
+
+
+volumes:
+  postgres-data:
+  rabbitmq-data:
+  seaweed-master-data:
+  seaweed-volume-data:
+  seaweed-filer-data:
+
+
+networks:
+  atlanticcity-network:
+    name: atlanticcity-network
+    driver: bridge
