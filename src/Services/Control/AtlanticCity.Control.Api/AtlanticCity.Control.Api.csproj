@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.20" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.*">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -17,6 +18,7 @@
   <ItemGroup>
     <ProjectReference Include="..\AtlanticCity.Control.Application\AtlanticCity.Control.Application.csproj" />
     <ProjectReference Include="..\AtlanticCity.Control.Infrastructure\AtlanticCity.Control.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\AtlanticCity.BuildingBlocks.Observability\AtlanticCity.BuildingBlocks.Observability.csproj" />
   </ItemGroup>
 
 </Project>

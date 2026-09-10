@@ -1,23 +1,57 @@
-var builder = WebApplication.CreateBuilder(args);
+using AtlanticCity.BuildingBlocks.Observability;
+using AtlanticCity.Gateway.Endpoints;
+using AtlanticCity.Gateway.Extensions;
 
-// Add services to the container.
+var builder =
+    WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.Logging.ClearProviders();
 
-var app = builder.Build();
+builder.Logging.AddJsonConsole(
+    options =>
+    {
+        options.IncludeScopes = true;
+        options.UseUtcTimestamp = true;
+        options.TimestampFormat =
+            "yyyy-MM-dd'T'HH:mm:ss.fff'Z'";
+    });
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
+builder.Services
+    .AddAtlanticCityProblemDetails();
+
+builder.Services.AddGatewayServices(
+    builder.Configuration);
+
+var app =
+    builder.Build();
+
+app.UseAtlanticCityCorrelationId();
+
+app.UseAtlanticCityExceptionHandling();
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
+
 app.UseAuthorization();
 
-app.MapControllers();
+app.UseRateLimiter();
+
+app.MapGet(
+        "/health",
+        () =>
+            Results.Ok(
+                new
+                {
+                    service =
+                        "AtlanticCity.Gateway",
+                    status =
+                        "Healthy"
+                }))
+    .AllowAnonymous();
+
+app.MapGatewayIdentityEndpoints();
+
+app.MapReverseProxy();
 
 app.Run();

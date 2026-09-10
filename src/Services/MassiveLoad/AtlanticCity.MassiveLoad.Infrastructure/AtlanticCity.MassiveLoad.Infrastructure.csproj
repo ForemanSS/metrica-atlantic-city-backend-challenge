@@ -3,6 +3,19 @@
   <ItemGroup>
     <ProjectReference Include="..\AtlanticCity.MassiveLoad.Application\AtlanticCity.MassiveLoad.Application.csproj" />
     <ProjectReference Include="..\AtlanticCity.MassiveLoad.Domain\AtlanticCity.MassiveLoad.Domain.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\AtlanticCity.BuildingBlocks.Contracts\AtlanticCity.BuildingBlocks.Contracts.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\AtlanticCity.BuildingBlocks.Messaging\AtlanticCity.BuildingBlocks.Messaging.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.1.79" />
+    <PackageReference Include="ExcelDataReader" Version="3.7.0" />
+    <PackageReference Include="MassTransit.RabbitMQ" Version="8.5.10" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.20" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.20" />
+    <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="9.1.0" />
+    <PackageReference Include="Npgsql" Version="9.0.4" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="9.0.0" />
   </ItemGroup>
 
   <PropertyGroup>

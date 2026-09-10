@@ -17,6 +17,7 @@
   <ItemGroup>
     <ProjectReference Include="..\AtlanticCity.Authentication.Application\AtlanticCity.Authentication.Application.csproj" />
     <ProjectReference Include="..\AtlanticCity.Authentication.Infrastructure\AtlanticCity.Authentication.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\AtlanticCity.BuildingBlocks.Observability\AtlanticCity.BuildingBlocks.Observability.csproj" />
   </ItemGroup>
 
 </Project>

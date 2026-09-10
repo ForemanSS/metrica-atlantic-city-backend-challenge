@@ -20,6 +20,7 @@ public sealed class RefreshToken
         CreatedAt = createdAt;
         ExpiresAt = expiresAt;
         CreatedByIp = createdByIp;
+        Version = 0;
     }
 
     public Guid Id { get; private set; }
@@ -40,6 +41,8 @@ public sealed class RefreshToken
 
     public Guid? ReplacedByTokenId { get; private set; }
 
+    public long Version { get; private set; }
+
     public static RefreshToken Create(
         Guid userId,
         string tokenHash,
@@ -47,9 +50,12 @@ public sealed class RefreshToken
         string? createdByIp = null,
         DateTimeOffset? createdAt = null)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(tokenHash);
+        ArgumentException.ThrowIfNullOrWhiteSpace(
+            tokenHash);
 
-        var now = createdAt ?? DateTimeOffset.UtcNow;
+        var now =
+            createdAt ??
+            DateTimeOffset.UtcNow;
 
         if (expiresAt <= now)
         {
@@ -67,7 +73,8 @@ public sealed class RefreshToken
             createdByIp);
     }
 
-    public bool IsActiveAt(DateTimeOffset instant)
+    public bool IsActiveAt(
+        DateTimeOffset instant)
     {
         return RevokedAt is null &&
                ExpiresAt > instant;
@@ -84,8 +91,16 @@ public sealed class RefreshToken
                 "Refresh token has already been revoked.");
         }
 
-        RevokedAt = revokedAt ?? DateTimeOffset.UtcNow;
-        RevokedByIp = revokedByIp;
-        ReplacedByTokenId = replacedByTokenId;
+        RevokedAt =
+            revokedAt ??
+            DateTimeOffset.UtcNow;
+
+        RevokedByIp =
+            revokedByIp;
+
+        ReplacedByTokenId =
+            replacedByTokenId;
+
+        Version++;
     }
 }

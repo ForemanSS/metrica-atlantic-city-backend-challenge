@@ -57,6 +57,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0AB3BF05
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtlanticCity.Control.IntegrationTests", "tests\AtlanticCity.Control.IntegrationTests\AtlanticCity.Control.IntegrationTests.csproj", "{F65F8884-5FFC-46B5-8DE4-790F27C32BF0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtlanticCity.Notification.UnitTests", "tests\AtlanticCity.Notification.UnitTests\AtlanticCity.Notification.UnitTests.csproj", "{C8A66129-98A8-4138-923D-B50176820424}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -355,6 +357,18 @@ Global
 		{F65F8884-5FFC-46B5-8DE4-790F27C32BF0}.Release|x64.Build.0 = Release|Any CPU
 		{F65F8884-5FFC-46B5-8DE4-790F27C32BF0}.Release|x86.ActiveCfg = Release|Any CPU
 		{F65F8884-5FFC-46B5-8DE4-790F27C32BF0}.Release|x86.Build.0 = Release|Any CPU
+		{C8A66129-98A8-4138-923D-B50176820424}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8A66129-98A8-4138-923D-B50176820424}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8A66129-98A8-4138-923D-B50176820424}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C8A66129-98A8-4138-923D-B50176820424}.Debug|x64.Build.0 = Debug|Any CPU
+		{C8A66129-98A8-4138-923D-B50176820424}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C8A66129-98A8-4138-923D-B50176820424}.Debug|x86.Build.0 = Debug|Any CPU
+		{C8A66129-98A8-4138-923D-B50176820424}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8A66129-98A8-4138-923D-B50176820424}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C8A66129-98A8-4138-923D-B50176820424}.Release|x64.ActiveCfg = Release|Any CPU
+		{C8A66129-98A8-4138-923D-B50176820424}.Release|x64.Build.0 = Release|Any CPU
+		{C8A66129-98A8-4138-923D-B50176820424}.Release|x86.ActiveCfg = Release|Any CPU
+		{C8A66129-98A8-4138-923D-B50176820424}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -385,5 +399,6 @@ Global
 		{59CE01BC-4ABB-4BD3-841F-34A5E99D0A21} = {90298CBA-BD6F-3A0A-69D5-97CAD7B05E7E}
 		{9026A38C-A167-42B3-B1A3-5FB1032425C1} = {90298CBA-BD6F-3A0A-69D5-97CAD7B05E7E}
 		{F65F8884-5FFC-46B5-8DE4-790F27C32BF0} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
+		{C8A66129-98A8-4138-923D-B50176820424} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 	EndGlobalSection
 EndGlobal

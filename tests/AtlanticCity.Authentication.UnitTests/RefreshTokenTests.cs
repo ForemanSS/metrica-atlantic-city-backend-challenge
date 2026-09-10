@@ -101,4 +101,32 @@ public sealed class RefreshTokenTests
                     revokedAt:
                         now.AddMinutes(2)));
     }
+
+    [Fact]
+    public void Revoke_ShouldIncrementVersion()
+    {
+        var createdAt =
+            DateTimeOffset.UtcNow;
+
+        var token =
+            RefreshToken.Create(
+                Guid.NewGuid(),
+                "token-hash",
+                createdAt.AddDays(7),
+                "127.0.0.1",
+                createdAt);
+
+        Assert.Equal(
+            0,
+            token.Version);
+
+        token.Revoke(
+            "127.0.0.1",
+            revokedAt:
+                createdAt.AddMinutes(1));
+
+        Assert.Equal(
+            1,
+            token.Version);
+    }
 }

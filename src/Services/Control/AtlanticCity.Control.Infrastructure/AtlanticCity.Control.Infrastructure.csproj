@@ -3,15 +3,20 @@
   <ItemGroup>
     <ProjectReference Include="..\AtlanticCity.Control.Application\AtlanticCity.Control.Application.csproj" />
     <ProjectReference Include="..\AtlanticCity.Control.Domain\AtlanticCity.Control.Domain.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\AtlanticCity.BuildingBlocks.Contracts\AtlanticCity.BuildingBlocks.Contracts.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\AtlanticCity.BuildingBlocks.Messaging\AtlanticCity.BuildingBlocks.Messaging.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.1.79" />
+    <PackageReference Include="MassTransit.RabbitMQ" Version="8.5.10" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.*" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.*">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.20" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.20" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.*" />
   </ItemGroup>
 

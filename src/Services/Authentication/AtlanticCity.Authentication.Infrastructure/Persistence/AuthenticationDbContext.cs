@@ -117,6 +117,11 @@ public sealed class AuthenticationDbContext(
         entity.Property(x => x.ReplacedByTokenId)
             .HasColumnName("replaced_by_token_id");
 
+        entity.Property(x => x.Version)
+            .HasColumnName("version")
+            .IsRequired()
+            .IsConcurrencyToken();
+
         entity.HasIndex(x => x.TokenHash)
             .IsUnique()
             .HasDatabaseName(

@@ -8,13 +8,20 @@ internal static class TestServiceProviderFactory
     public static ServiceProvider Create(
         string connectionString)
     {
-        var services = new ServiceCollection();
-
-        services.AddLogging();
-
-        services.AddControlInfrastructure(
+        ArgumentException.ThrowIfNullOrWhiteSpace(
             connectionString);
 
-        return services.BuildServiceProvider();
+        var services =
+            new ServiceCollection();
+
+        services.AddControlPersistence(
+            connectionString);
+
+        return services.BuildServiceProvider(
+            new ServiceProviderOptions
+            {
+                ValidateScopes = true,
+                ValidateOnBuild = true
+            });
     }
 }

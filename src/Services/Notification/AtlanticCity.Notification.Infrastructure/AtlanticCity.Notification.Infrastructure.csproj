@@ -3,6 +3,16 @@
   <ItemGroup>
     <ProjectReference Include="..\AtlanticCity.Notification.Application\AtlanticCity.Notification.Application.csproj" />
     <ProjectReference Include="..\AtlanticCity.Notification.Domain\AtlanticCity.Notification.Domain.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\AtlanticCity.BuildingBlocks.Contracts\AtlanticCity.BuildingBlocks.Contracts.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\AtlanticCity.BuildingBlocks.Messaging\AtlanticCity.BuildingBlocks.Messaging.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.1.79" />
+    <PackageReference Include="MailKit" Version="4.17.0" />
+    <PackageReference Include="MassTransit.RabbitMQ" Version="8.5.10" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.20" />
+    <PackageReference Include="Npgsql" Version="9.0.4" />
   </ItemGroup>
 
   <PropertyGroup>

@@ -27,9 +27,13 @@ public sealed class LoadPeriodReservationStoreTests
             TestServiceProviderFactory.Create(
                 _fixture.ConnectionString);
 
+        await using var scope =
+            provider.CreateAsyncScope();
+
         var store =
-            provider.GetRequiredService<
-                ILoadPeriodReservationStore>();
+            scope.ServiceProvider
+                .GetRequiredService<
+                    ILoadPeriodReservationStore>();
 
         var result =
             await store.TryReserveAsync(
@@ -66,9 +70,13 @@ public sealed class LoadPeriodReservationStoreTests
             TestServiceProviderFactory.Create(
                 _fixture.ConnectionString);
 
+        await using var scope =
+            provider.CreateAsyncScope();
+
         var store =
-            provider.GetRequiredService<
-                ILoadPeriodReservationStore>();
+            scope.ServiceProvider
+                .GetRequiredService<
+                    ILoadPeriodReservationStore>();
 
         var first =
             await store.TryReserveAsync(
@@ -104,9 +112,13 @@ public sealed class LoadPeriodReservationStoreTests
             TestServiceProviderFactory.Create(
                 _fixture.ConnectionString);
 
+        await using var scope =
+            provider.CreateAsyncScope();
+
         var store =
-            provider.GetRequiredService<
-                ILoadPeriodReservationStore>();
+            scope.ServiceProvider
+                .GetRequiredService<
+                    ILoadPeriodReservationStore>();
 
         await store.TryReserveAsync(
             firstLoad.Id,
@@ -145,9 +157,13 @@ public sealed class LoadPeriodReservationStoreTests
             TestServiceProviderFactory.Create(
                 _fixture.ConnectionString);
 
+        await using var scope =
+            provider.CreateAsyncScope();
+
         var store =
-            provider.GetRequiredService<
-                ILoadPeriodReservationStore>();
+            scope.ServiceProvider
+                .GetRequiredService<
+                    ILoadPeriodReservationStore>();
 
         await store.TryReserveAsync(
             firstLoad.Id,
@@ -204,9 +220,13 @@ public sealed class LoadPeriodReservationStoreTests
             TestServiceProviderFactory.Create(
                 _fixture.ConnectionString);
 
+        await using var scope =
+            provider.CreateAsyncScope();
+
         var store =
-            provider.GetRequiredService<
-                ILoadPeriodReservationStore>();
+            scope.ServiceProvider
+                .GetRequiredService<
+                    ILoadPeriodReservationStore>();
 
         var firstTask =
             store.TryReserveAsync(
@@ -249,9 +269,13 @@ public sealed class LoadPeriodReservationStoreTests
             TestServiceProviderFactory.Create(
                 _fixture.ConnectionString);
 
+        await using var scope =
+            provider.CreateAsyncScope();
+
         var store =
-            provider.GetRequiredService<
-                ILoadPeriodReservationStore>();
+            scope.ServiceProvider
+                .GetRequiredService<
+                    ILoadPeriodReservationStore>();
 
         var reservation =
             await store.TryReserveAsync(

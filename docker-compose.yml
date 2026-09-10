@@ -1,13 +1,12 @@
-services:
+﻿services:
 
   postgres:
     image: postgres:17-alpine
     container_name: atlanticcity-postgres
-    restart: unless-stopped
     environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: atlanticcity
+      POSTGRES_PASSWORD: atlanticcity_dev_2026
+      POSTGRES_DB: atlanticcity
     ports:
       - "5432:5432"
     volumes:
@@ -17,28 +16,23 @@ services:
       test:
         [
           "CMD-SHELL",
-          "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"
+          "pg_isready -U atlanticcity -d atlanticcity"
         ]
       interval: 5s
       timeout: 5s
-      retries: 10
-      start_period: 10s
-    networks:
-      - atlanticcity-network
+      retries: 20
+    restart: unless-stopped
 
 
   rabbitmq:
     image: rabbitmq:4-management
     container_name: atlanticcity-rabbitmq
-    restart: unless-stopped
     environment:
-      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
-      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+      RABBITMQ_DEFAULT_USER: atlanticcity
+      RABBITMQ_DEFAULT_PASS: atlanticcity_dev_2026
     ports:
       - "5672:5672"
       - "15672:15672"
-    volumes:
-      - rabbitmq-data:/var/lib/rabbitmq
     healthcheck:
       test:
         [
@@ -47,47 +41,50 @@ services:
           "-q",
           "ping"
         ]
-      interval: 10s
+      interval: 5s
       timeout: 5s
-      retries: 10
-      start_period: 20s
-    networks:
-      - atlanticcity-network
+      retries: 20
+    restart: unless-stopped
 
 
   seaweed-master:
-    image: chrislusf/seaweedfs:latest
+    image: chrislusf/seaweedfs:4.46
     container_name: atlanticcity-seaweed-master
-    restart: unless-stopped
-    command: "master -ip=seaweed-master -mdir=/data"
+    command:
+      - master
+      - -ip=seaweed-master
+      - -mdir=/data
+      - -volumeSizeLimitMB=1024
     ports:
       - "9333:9333"
     volumes:
       - seaweed-master-data:/data
-    networks:
-      - atlanticcity-network
+    restart: unless-stopped
 
 
   seaweed-volume:
-    image: chrislusf/seaweedfs:latest
+    image: chrislusf/seaweedfs:4.46
     container_name: atlanticcity-seaweed-volume
-    restart: unless-stopped
-    command: "volume -mserver=seaweed-master:9333 -port=8080 -dir=/data"
+    command:
+      - volume
+      - -mserver=seaweed-master:9333
+      - -port=8080
+      - -dir=/data
+      - -max=5
     depends_on:
       - seaweed-master
-    ports:
-      - "8080:8080"
     volumes:
       - seaweed-volume-data:/data
-    networks:
-      - atlanticcity-network
+    restart: unless-stopped
 
 
   seaweed-filer:
-    image: chrislusf/seaweedfs:latest
+    image: chrislusf/seaweedfs:4.46
     container_name: atlanticcity-seaweed-filer
-    restart: unless-stopped
-    command: "filer -master=seaweed-master:9333 -ip=seaweed-filer"
+    command:
+      - filer
+      - -master=seaweed-master:9333
+      - -port=8888
     depends_on:
       - seaweed-master
       - seaweed-volume
@@ -95,30 +92,181 @@ services:
       - "8888:8888"
     volumes:
       - seaweed-filer-data:/data
-    networks:
-      - atlanticcity-network
+    restart: unless-stopped
 
 
   mailpit:
     image: axllent/mailpit:latest
     container_name: atlanticcity-mailpit
-    restart: unless-stopped
     ports:
       - "1025:1025"
       - "8025:8025"
-    networks:
-      - atlanticcity-network
+    restart: unless-stopped
+
+
+  authentication-api:
+    build:
+      context: .
+      dockerfile: src/Services/Authentication/AtlanticCity.Authentication.Api/Dockerfile
+    container_name: atlanticcity-authentication-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+
+      ConnectionStrings__AuthenticationDb: Host=postgres;Port=5432;Database=atlanticcity_auth;Username=atlanticcity;Password=atlanticcity_dev_2026
+
+      Jwt__Issuer: AtlanticCity.Authentication
+      Jwt__Audience: AtlanticCity.Api
+      Jwt__SigningKey: AtlanticCity.Challenge.Dev.SigningKey.2026.MustBe32Bytes
+      Jwt__AccessTokenMinutes: 15
+
+      RefreshToken__LifetimeDays: 7
+
+      SeedUser__Enabled: "true"
+      SeedUser__Email: admin@atlanticcity.pe
+      SeedUser__DisplayName: Atlantic City Administrator
+      SeedUser__Password: AtlanticCity.Admin.2026!
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "5149:8080"
+    restart: unless-stopped
+
+
+  control-api:
+    build:
+      context: .
+      dockerfile: src/Services/Control/AtlanticCity.Control.Api/Dockerfile
+    container_name: atlanticcity-control-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+
+      ConnectionStrings__ControlDb: Host=postgres;Port=5432;Database=atlanticcity;Username=atlanticcity;Password=atlanticcity_dev_2026
+
+      RabbitMq__Host: rabbitmq
+      RabbitMq__Port: 5672
+      RabbitMq__VirtualHost: /
+      RabbitMq__Username: atlanticcity
+      RabbitMq__Password: atlanticcity_dev_2026
+
+      SeaweedFs__BaseAddress: http://seaweed-filer:8888/
+      SeaweedFs__RootPath: loads
+
+      Jwt__Issuer: AtlanticCity.Authentication
+      Jwt__Audience: AtlanticCity.Api
+      Jwt__SigningKey: AtlanticCity.Challenge.Dev.SigningKey.2026.MustBe32Bytes
+
+      LoadUpload__MaxFileSizeBytes: 20971520
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      seaweed-filer:
+        condition: service_started
+    ports:
+      - "5112:8080"
+    restart: unless-stopped
+
+
+  massive-load-worker:
+    build:
+      context: .
+      dockerfile: src/Services/MassiveLoad/AtlanticCity.MassiveLoad.Worker/Dockerfile
+    container_name: atlanticcity-massive-load-worker
+    environment:
+      DOTNET_ENVIRONMENT: Development
+
+      ConnectionStrings__MassiveLoadDb: Host=postgres;Port=5432;Database=atlanticcity;Username=atlanticcity;Password=atlanticcity_dev_2026
+
+      RabbitMq__Host: rabbitmq
+      RabbitMq__Port: 5672
+      RabbitMq__VirtualHost: /
+      RabbitMq__Username: atlanticcity
+      RabbitMq__Password: atlanticcity_dev_2026
+
+      SeaweedFs__BaseAddress: http://seaweed-filer:8888/
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      seaweed-filer:
+        condition: service_started
+      control-api:
+        condition: service_started
+    restart: unless-stopped
+
+
+  notification-worker:
+    build:
+      context: .
+      dockerfile: src/Services/Notification/AtlanticCity.Notification.Worker/Dockerfile
+    container_name: atlanticcity-notification-worker
+    environment:
+      DOTNET_ENVIRONMENT: Development
+
+      ConnectionStrings__NotificationDb: Host=postgres;Port=5432;Database=atlanticcity;Username=atlanticcity;Password=atlanticcity_dev_2026
+
+      RabbitMq__Host: rabbitmq
+      RabbitMq__Port: 5672
+      RabbitMq__VirtualHost: /
+      RabbitMq__Username: atlanticcity
+      RabbitMq__Password: atlanticcity_dev_2026
+
+      Smtp__Host: mailpit
+      Smtp__Port: 1025
+      Smtp__FromAddress: no-reply@atlanticcity.local
+      Smtp__FromName: Atlantic City
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
+      control-api:
+        condition: service_started
+    restart: unless-stopped
+
+
+  gateway:
+    build:
+      context: .
+      dockerfile: src/Gateway/AtlanticCity.Gateway/Dockerfile
+    container_name: atlanticcity-gateway
+    environment:
+      ASPNETCORE_ENVIRONMENT: Docker
+      ASPNETCORE_URLS: http://+:8080
+
+      Jwt__Issuer: AtlanticCity.Authentication
+      Jwt__Audience: AtlanticCity.Api
+      Jwt__SigningKey: AtlanticCity.Challenge.Dev.SigningKey.2026.MustBe32Bytes
+
+    depends_on:
+      - authentication-api
+      - control-api
+    ports:
+      - "5017:8080"
+    restart: unless-stopped
+
+
+  web:
+    build:
+      context: .
+      dockerfile: web/Dockerfile
+    container_name: atlanticcity-web
+    depends_on:
+      - gateway
+    ports:
+      - "3000:80"
+    restart: unless-stopped
 
 
 volumes:
   postgres-data:
-  rabbitmq-data:
   seaweed-master-data:
   seaweed-volume-data:
   seaweed-filer-data:
-
-
-networks:
-  atlanticcity-network:
-    name: atlanticcity-network
-    driver: bridge

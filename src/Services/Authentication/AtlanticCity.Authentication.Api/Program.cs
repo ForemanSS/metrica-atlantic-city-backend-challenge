@@ -1,42 +1,49 @@
+using AtlanticCity.Authentication.Application;
 using AtlanticCity.Authentication.Infrastructure;
-using AtlanticCity.Authentication.Infrastructure.Persistence;
-using Microsoft.EntityFrameworkCore;
+using AtlanticCity.Authentication.Infrastructure.Initialization;
+using AtlanticCity.BuildingBlocks.Observability;
 
 var builder =
     WebApplication.CreateBuilder(args);
 
+builder.Logging.ClearProviders();
+
+builder.Logging.AddJsonConsole(
+    options =>
+    {
+        options.IncludeScopes = true;
+        options.UseUtcTimestamp = true;
+        options.TimestampFormat =
+            "yyyy-MM-dd'T'HH:mm:ss.fff'Z'";
+    });
+
+builder.Services
+    .AddAtlanticCityProblemDetails();
+
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
-var connectionString =
-    builder.Configuration
-        .GetConnectionString("AuthenticationDb")
-    ?? throw new InvalidOperationException(
-        "Connection string 'AuthenticationDb' was not configured.");
+builder.Services
+    .AddAuthenticationApplication();
 
-builder.Services.AddAuthenticationInfrastructure(
-    connectionString);
+builder.Services
+    .AddAuthenticationInfrastructure(
+        builder.Configuration);
 
 var app =
     builder.Build();
 
-await using (var scope =
-             app.Services.CreateAsyncScope())
-{
-    var dbContext =
-        scope.ServiceProvider
-            .GetRequiredService<
-                AuthenticationDbContext>();
+app.UseAtlanticCityCorrelationId();
 
-    await dbContext.Database.MigrateAsync();
-}
+app.UseAtlanticCityExceptionHandling();
+
+await app.Services
+    .InitializeAuthenticationAsync();
 
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
-
-app.UseHttpsRedirection();
 
 app.MapControllers();
 

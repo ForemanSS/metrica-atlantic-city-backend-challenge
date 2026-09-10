@@ -1,0 +1,13 @@
+﻿**/bin/
+**/obj/
+**/.vs/
+**/.idea/
+**/.vscode/
+.git/
+.gitignore
+web/node_modules/
+web/dist/
+TestResults/
+coverage/
+*.user
+*.suo
